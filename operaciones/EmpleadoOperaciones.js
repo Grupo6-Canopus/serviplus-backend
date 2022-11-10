@@ -1,11 +1,19 @@
 const empleadoModelo = require("../modelos/EmpleadoModelo");
+const bcrypt = require ("bcrypt");
 const empleadoOperaciones = {}
+
+const cifrarPassword = async (passw) => {
+    const SALT_TIMES = 10;
+    const salt = await bcrypt.genSalt(SALT_TIMES);
+    return await bcrypt.hash (passw, salt);
+}
 
 empleadoOperaciones.crearEmpleado = async (req, res)=>{
     try {
-        const objeto = req.body;
-        console.log(objeto);
-        const empleado = new empleadoModelo(objeto);
+        const body = req.body;
+        body.passw = await cifrarPassword(body.passw);
+        console.log(body);
+        const empleado = new empleadoModelo(body);
         const empleadoGuardado = await empleado.save();
         res.status(201).send(empleadoGuardado);
     } catch (error) {
@@ -53,20 +61,25 @@ empleadoOperaciones.buscarEmpleadoPorId = async (req, res)=>{
             res.status(404).send("No se encontró el empleado buscado");
         }
     } catch (error) {
-        res.status(400).json("La petición está errada");
+        res.status(400).send("La petición está errada "+error);
     }
 }
 
-empleadoOperaciones.modificarempleado = async (req, res)=>{
+empleadoOperaciones.modificarempleado = async (req, res) => {
     try {
         const id = req.params.id;
         const body = req.body;
+        if (body.passw != null) {
+            body.passw = await cifrarPassword (body.passw)
+        }
         const datosActualizar = {
             nombres: body.nombres,
             apellidos: body.apellidos,
             cargo: body.cargo,
             area: body.area,
-            telefono: body.telefono
+            telefono: body.telefono,
+            rolAdministrador:  body.rolAdministrador,
+            password: body.password
         }
         const empleadoActualizado = await empleadoModelo.findByIdAndUpdate(id, datosActualizar, { new : true });
         if (empleadoActualizado != null) {
@@ -80,7 +93,7 @@ empleadoOperaciones.modificarempleado = async (req, res)=>{
     }
 }
 
-empleadoOperaciones.borrarempleado = async (req, res)=>{
+/*empleadoOperaciones.borrarempleado = async (req, res)=>{
     try {
         const id = req.params.id;
         const empleado = await empleadoModelo.findByIdAndDelete(id);
@@ -92,6 +105,6 @@ empleadoOperaciones.borrarempleado = async (req, res)=>{
     } catch (error) {
         res.status(400).send("La petición está errada. "+error);
     }
-}
+}*/
 
 module.exports = empleadoOperaciones;

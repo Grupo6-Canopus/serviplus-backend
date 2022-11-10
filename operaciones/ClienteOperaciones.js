@@ -1,11 +1,19 @@
 const clienteModelo = require("../modelos/ClienteModelo");
-const clienteOperaciones = {}
+const bcrypt = require ("bcrypt");
+const clienteOperaciones = {};
+
+const cifrarPassword = async (passw) => {
+    const SALT_TIMES = 10;
+    const salt = await bcrypt.genSalt(SALT_TIMES);
+    return await bcrypt.hash (passw, salt);
+}
 
 clienteOperaciones.crearCliente = async (req, res)=>{
     try {
-        const objeto = req.body;
-        console.log(objeto);
-        const cliente = new clienteModelo(objeto);
+        const body = req.body;
+        body.passw = await cifrarPassword(body.passw);
+        console.log(body);
+        const cliente = new clienteModelo(body);
         const clienteGuardado = await cliente.save();
         res.status(201).send(clienteGuardado);
     } catch (error) {
@@ -20,6 +28,7 @@ clienteOperaciones.buscarClientes = async (req, res)=>{
         if (filtro.q != null) {
             listaclientes = await clienteModelo.find({
                 "$or" : [ 
+                    { "identificacion": { $regex:filtro.q, $options:"i" }},
                     { "nombres": { $regex:filtro.q, $options:"i" }},
                     { "apellidos": { $regex:filtro.q, $options:"i" }},
                     { "telefono": { $regex:filtro.q, $options:"i" }},
@@ -58,9 +67,14 @@ clienteOperaciones.modificarCliente = async (req, res)=>{
     try {
         const id = req.params.id;
         const body = req.body;
+        if (body.passw != null) {
+            body.passw = await cifrarPassword (body.passw)
+        }
         const datosActualizar = {
             nombres: body.nombres,
             apellidos: body.apellidos,
+            sede: body.sede,
+            email: body.email,
             telefono: body.telefono,
             password: body.password
         }
@@ -76,7 +90,7 @@ clienteOperaciones.modificarCliente = async (req, res)=>{
     }
 }
 
-clienteOperaciones.borrarCliente = async (req, res)=>{
+/*clienteOperaciones.borrarCliente = async (req, res)=>{
     try {
         const id = req.params.id;
         const cliente = await clienteModelo.findByIdAndDelete(id);
@@ -88,6 +102,6 @@ clienteOperaciones.borrarCliente = async (req, res)=>{
     } catch (error) {
         res.status(400).send("La petición está errada. "+error);
     }
-}
+}*/
 
 module.exports = clienteOperaciones;
