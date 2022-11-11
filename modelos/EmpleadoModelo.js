@@ -9,7 +9,8 @@ const empleadoSchema = mongoose.Schema({
     telefono: { type: String, required: true, unique: false },
     email: { type: String, maxLength: 80, required: true, unique: true },
     rolAdministrador: { type: Boolean, required: true, unique: false },
-    password: { type: String, maxLength: 20, required: true, unique: false }
+    activo: { type: Boolean, required: true},
+    password: { type: String, required: true, unique: false }
 });
 
 module.exports = mongoose.model("empleados", empleadoSchema);

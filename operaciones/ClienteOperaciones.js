@@ -5,14 +5,13 @@ const clienteOperaciones = {};
 const cifrarPassword = async (passw) => {
     const SALT_TIMES = 10;
     const salt = await bcrypt.genSalt(SALT_TIMES);
-    return await bcrypt.hash (passw, salt);
+    return await bcrypt.hash(passw, salt);
 }
 
 clienteOperaciones.crearCliente = async (req, res)=>{
     try {
         const body = req.body;
-        body.passw = await cifrarPassword(body.passw);
-        console.log(body);
+        body.password = await cifrarPassword(body.password);
         const cliente = new clienteModelo(body);
         const clienteGuardado = await cliente.save();
         res.status(201).send(clienteGuardado);
@@ -39,11 +38,7 @@ clienteOperaciones.buscarClientes = async (req, res)=>{
         else {
             listaclientes = await clienteModelo.find(filtro);
         }
-        if (listaclientes.length > 0){
-            res.status(200).send(listaclientes);
-        } else {
-            res.status(404).send("No se encontró el cliente buscado.");
-        }
+        res.status(200).send(listaclientes);
     } catch (error) {
         res.status(400).send("La petición está errada. "+error);
     }

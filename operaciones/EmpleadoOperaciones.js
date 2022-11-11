@@ -11,8 +11,7 @@ const cifrarPassword = async (passw) => {
 empleadoOperaciones.crearEmpleado = async (req, res)=>{
     try {
         const body = req.body;
-        body.passw = await cifrarPassword(body.passw);
-        console.log(body);
+        body.password = await cifrarPassword(body.password);
         const empleado = new empleadoModelo(body);
         const empleadoGuardado = await empleado.save();
         res.status(201).send(empleadoGuardado);

@@ -7,7 +7,7 @@ const clienteSchema = mongoose.Schema({
     sede: { type: String, maxLength: 10, required: true, unique: false },
     telefono: { type: String, required: true, unique: false },
     email: { type: String, maxLength: 80, required: true, unique: true },
-    password: { type: String, maxLength: 20, required: true, unique: false }
+    password: { type: String, required: true, unique: false }
 });
 
 module.exports = mongoose.model("clientes", clienteSchema);

@@ -23,3 +23,4 @@ app.get('/', (req, res) => {
 });
 app.use("/clientes", require("./rutas/ClienteRutas"));
 app.use("/empleados", require("./rutas/EmpleadoRutas"));
+app.use("/tickets", require("./rutas/TicketRutas"));
