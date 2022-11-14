@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const ticketSchema = mongoose.Schema({
-    radicado: { type: String, maxLength: 20, required: true, unique: false },
+    radicado: { type: String, maxLength: 20, required: false, unique: false },
     id_cliente: { type: String, maxLength: 20, required: true, unique: true },
     email_cliente: { type: String, maxLength: 80, required: true, unique: true },
     cod_empleado: { type: String, maxLength: 20, required: false, unique: true },
